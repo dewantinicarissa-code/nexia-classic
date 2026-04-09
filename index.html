@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexia Classic - Game Guide & Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #8a6a1f;
+    --bg-dark: #0a0c10;
+    --bg-mid: #10131a;
+    --bg-card: #141820;
+    --bg-panel: #1a1f2e;
+    --border: #2a3045;
+    --border-glow: #c9a84c55;
+    --text: #d4c9b0;
+    --text-muted: #7a8099;
+    --text-bright: #f0e8d0;
+    --red: #c0392b;
+    --green: #27ae60;
+    --blue: #2980b9;
+    --purple: #8e44ad;
+    --orange: #e67e22;
+    --rank1: #ff6b6b;
+    --rank2: #ffd93d;
+    --rank3: #c9a84c;
+    --nav-h: 58px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* ── Background texture ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, #c9a84c08 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, #2980b908 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, #ffffff02 40px, #ffffff02 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, #ffffff02 40px, #ffffff02 41px);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(180deg, #080a0f 0%, #0a0c10ee 100%);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: var(--nav-h);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #0a0c10; font-weight: 700;
+  }
+  .logo-text { font-family: 'Cinzel', serif; }
+  .logo-text span:first-child { color: var(--gold); font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+  .logo-text span:last-child { color: var(--text-muted); font-size: 11px; display: block; letter-spacing: 4px; margin-top: -2px; }
+  .server-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: #0d1117; border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+  .online-count { color: var(--gold); font-weight: 600; }
+
+  /* ── NAV ── */
+  nav {
+    border-top: 1px solid var(--border);
+    background: #0d1019;
+  }
+  .nav-inner {
+    display: flex; max-width: 1400px; margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .nav-inner a {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-muted); text-decoration: none;
+    font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 16px;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .nav-inner a:hover, .nav-inner a.active {
+    color: var(--gold); border-bottom-color: var(--gold);
+  }
+  .nav-icon { font-size: 14px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem; position: relative; z-index: 1; }
+  .grid-main { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+  .grid-main-wide { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+
+  /* ── PANEL / CARD ── */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title::before { content: '◈'; font-size: 10px; }
+  .panel-body { padding: 16px; }
+
+  /* ── HERO SECTION ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1a0d 0%, #0a0f1a 50%, #1a0d0d 100%);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2.5rem 2rem;
+    position: relative; overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; top: -40%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #c9a84c0a 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem; font-weight: 700;
+    color: var(--gold-light);
+    text-shadow: 0 0 40px #c9a84c44;
+    margin-bottom: .5rem;
+  }
+  .hero p { color: var(--text-muted); font-size: 14px; max-width: 500px; line-height: 1.7; }
+  .hero-stats {
+    display: flex; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.8rem; color: var(--gold); display: block;
+  }
+  .hero-stat .lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+
+  /* ── SEARCH BAR ── */
+  .search-bar {
+    display: flex; gap: 8px; margin-top: 1.5rem;
+  }
+  .search-input {
+    flex: 1;
+    background: #0a0c10; border: 1px solid var(--border);
+    color: var(--text); padding: 10px 16px; border-radius: 4px;
+    font-family: 'Raleway', sans-serif; font-size: 14px;
+    transition: border-color .2s;
+  }
+  .search-input:focus { outline: none; border-color: var(--gold); }
+  .search-input::placeholder { color: var(--text-muted); }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #0a0c10; border: none; padding: 10px 20px;
+    border-radius: 4px; font-weight: 700; font-size: 13px; letter-spacing: 1px;
+    cursor: pointer; text-transform: uppercase; transition: opacity .2s;
+  }
+  .btn-gold:hover { opacity: .85; }
+  .btn-outline {
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border); padding: 8px 14px;
+    border-radius: 4px; font-size: 12px; cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── TABS ── */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 10px 18px; font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-muted); cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all .2s;
+  }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* ── MONSTER TABLE ── */
+  .monster-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .monster-table th {
+    padding: 8px 12px; text-align: left;
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); background: #0d1019;
+    border-bottom: 1px solid var(--border);
+  }
+  .monster-table td { padding: 10px 12px; border-bottom: 1px solid #1a1f2e; vertical-align: middle; }
+  .monster-table tr:hover td { background: #1a1f2e; }
+  .monster-table tr:last-child td { border-bottom: none; }
+  .monster-name { color: var(--text-bright); font-weight: 600; }
+  .monster-name a { color: inherit; text-decoration: none; }
+  .monster-name a:hover { color: var(--gold); }
+  .monster-lvl {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--gold); font-size: 12px;
+  }
+  .monster-hp {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--red); font-size: 12px;
+  }
+  .monster-exp {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--green); font-size: 12px;
+  }
+  .monster-zone { color: var(--blue); font-size: 12px; }
+  .monster-img {
+    width: 32px; height: 32px; border-radius: 4px;
+    background: var(--bg-panel);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  /* ── DROP BADGES ── */
+  .drops { display: flex; flex-wrap: wrap; gap: 4px; }
+  .drop-badge {
+    font-size: 10px; padding: 2px 8px; border-radius: 3px;
+    font-weight: 600; letter-spacing: .5px;
+  }
+  .drop-common { background: #1e2433; color: var(--text-muted); border: 1px solid var(--border); }
+  .drop-uncommon { background: #0d1f0d; color: #4caf50; border: 1px solid #2a4a2a; }
+  .drop-rare { background: #0d1529; color: #5b9bd5; border: 1px solid #1a3050; }
+  .drop-epic { background: #1a0d29; color: #b57bee; border: 1px solid #3a1f5a; }
+  .drop-legendary { background: #1f1400; color: var(--gold); border: 1px solid var(--gold-dark); }
+
+  /* ── RANK TABLE ── */
+  .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rank-table td { padding: 9px 12px; border-bottom: 1px solid #1a1f2e; }
+  .rank-table tr:hover td { background: #1a1f2e; }
+  .rank-table tr:last-child td { border-bottom: none; }
+  .rank-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px; font-weight: 700; width: 32px;
+  }
+  .rank-1 { color: var(--rank1); }
+  .rank-2 { color: var(--rank2); }
+  .rank-3 { color: var(--rank3); }
+  .rank-other { color: var(--text-muted); }
+  .rank-player { color: var(--text-bright); font-weight: 600; }
+  .rank-class { font-size: 11px; color: var(--text-muted); }
+  .rank-val {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--gold); text-align: right; font-size: 12px;
+  }
+  .rank-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .rb-warrior { background: #3a1010; color: #e74c3c; }
+  .rb-mage   { background: #0d103a; color: #5b9bd5; }
+  .rb-archer { background: #0d3a10; color: #27ae60; }
+  .rb-cleric { background: #3a2a0d; color: var(--gold); }
+  .rb-rogue  { background: #1a0d2e; color: #9b59b6; }
+
+  /* ── ITEM GRID ── */
+  .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .item-card {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px; cursor: pointer;
+    transition: all .2s; text-align: center;
+  }
+  .item-card:hover { border-color: var(--gold); background: #1e2433; transform: translateY(-2px); }
+  .item-icon { font-size: 28px; margin-bottom: 6px; display: block; }
+  .item-name { font-size: 12px; font-weight: 600; color: var(--text-bright); margin-bottom: 3px; }
+  .item-type { font-size: 10px; color: var(--text-muted); }
+  .item-rarity {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; margin-top: 4px;
+  }
+  .rarity-common   { color: var(--text-muted); }
+  .rarity-uncommon { color: #27ae60; }
+  .rarity-rare     { color: #2980b9; }
+  .rarity-epic     { color: #8e44ad; }
+  .rarity-legendary{ color: var(--gold); }
+
+  /* ── NEWS ── */
+  .news-item {
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; color: var(--text-muted); min-width: 80px; padding-top: 2px;
+  }
+  .news-content { flex: 1; }
+  .news-title { font-size: 13px; color: var(--text-bright); font-weight: 600; margin-bottom: 4px; cursor: pointer; }
+  .news-title:hover { color: var(--gold); }
+  .news-excerpt { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+  .news-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 3px;
+    background: #1a1f2e; color: var(--text-muted); margin-right: 4px;
+  }
+  .news-tag.hot { background: #2a1010; color: #e74c3c; }
+  .news-tag.new-tag { background: #0d1f0d; color: #27ae60; }
+  .news-tag.update { background: #0d1529; color: #5b9bd5; }
+
+  /* ── SIDEBAR WIDGETS ── */
+  .sidebar-server { padding: 14px; }
+  .server-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .server-row:last-child { border-bottom: none; }
+  .server-row span:first-child { color: var(--text-muted); }
+  .server-row span:last-child { color: var(--gold); font-family: 'Share Tech Mono', monospace; }
+
+  .quick-links { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .ql-btn {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    padding: 10px 8px; border-radius: 4px; text-align: center;
+    cursor: pointer; text-decoration: none; display: block;
+    transition: all .2s;
+  }
+  .ql-btn:hover { border-color: var(--gold); background: #1e2433; }
+  .ql-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+  .ql-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .5px; }
+
+  /* ── ZONE MAP ── */
+  .zone-list { padding: 0; }
+  .zone-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid var(--border); cursor: pointer;
+    transition: background .15s;
+  }
+  .zone-row:last-child { border-bottom: none; }
+  .zone-row:hover { background: #1a1f2e; }
+  .zone-name { font-size: 13px; color: var(--text-bright); font-weight: 500; }
+  .zone-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .zone-lvl  { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--gold); }
+  .zone-dot  { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+  .z-safe    { background: var(--green); }
+  .z-normal  { background: var(--blue); }
+  .z-danger  { background: var(--orange); }
+  .z-extreme { background: var(--red); }
+
+  /* ── FILTER PILLS ── */
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pill {
+    padding: 4px 12px; border-radius: 20px; font-size: 11px;
+    font-weight: 600; letter-spacing: .5px; cursor: pointer;
+    border: 1px solid var(--border); color: var(--text-muted);
+    transition: all .2s;
+  }
+  .pill:hover, .pill.active { border-color: var(--gold); color: var(--gold); background: #1f1800; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold-dark); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); margin-top: 3rem;
+    padding: 2rem; text-align: center;
+    font-size: 12px; color: var(--text-muted);
+  }
+  footer a { color: var(--gold-dark); text-decoration: none; }
+  footer a:hover { color: var(--gold); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .grid-main { grid-template-columns: 1fr; }
+    .header-top { padding: 0 1rem; }
+    .container { padding: 1rem; }
+    .hero h1 { font-size: 1.6rem; }
+    .hero-stats { gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <a href="#" class="logo">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">
+        <span>NEXIA</span>
+        <span>CLASSIC DATABASE</span>
+      </div>
+    </a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="server-badge">
+        <div class="status-dot"></div>
+        <span style="color:var(--text-muted);font-size:11px;">SERVER</span>
+        <span class="online-count" id="playerCount">1,247</span>
+        <span style="color:var(--text-muted);font-size:11px;">ONLINE</span>
+      </div>
+      <button class="btn-gold" onclick="alert('Halaman Registrasi')">DAFTAR</button>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="active"><span class="nav-icon">⚔</span> Beranda</a>
+      <a href="#monsters"><span class="nav-icon">👾</span> Monster</a>
+      <a href="#items"><span class="nav-icon">🗡</span> Item</a>
+      <a href="#ranking"><span class="nav-icon">🏆</span> Ranking</a>
+      <a href="#zones"><span class="nav-icon">🗺</span> Peta Zona</a>
+      <a href="#"><span class="nav-icon">📖</span> Skill Tree</a>
+      <a href="#"><span class="nav-icon">⚗</span> Crafting</a>
+      <a href="#"><span class="nav-icon">💬</span> Forum</a>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <h1>Selamat Datang di Nexia Classic</h1>
+      <p>Panduan lengkap untuk petualangan kamu — database monster, drop item, ranking pemain, peta zona, dan semua yang kamu butuhkan untuk menguasai dunia Nexia.</p>
+      <div class="search-bar">
+        <input class="search-input" type="text" placeholder="Cari monster, item, skill, pemain..." id="globalSearch">
+        <button class="btn-gold" onclick="doSearch()">🔍 CARI</button>
+        <button class="btn-outline" onclick="document.getElementById('globalSearch').value=''">✕</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="num" id="h1">1,248</span><span class="lbl">Pemain Online</span></div>
+        <div class="hero-stat"><span class="num">312</span><span class="lbl">Jenis Monster</span></div>
+        <div class="hero-stat"><span class="num">1,847</span><span class="lbl">Database Item</span></div>
+        <div class="hero-stat"><span class="num">58</span><span class="lbl">Zona Area</span></div>
+        <div class="hero-stat"><span class="num">24k</span><span class="lbl">Member Terdaftar</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-main">
+    <div>
+
+      <!-- MONSTER DATABASE -->
+      <div id="monsters" class="section-label">Database Monster & Drop</div>
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-header">
+          <div class="panel-title">Monster Drop Rate</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-outline" onclick="sortMonsters()">⇅ Sort</button>
+            <button class="btn-outline" onclick="filterMonsters()">⚙ Filter</button>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:12px 16px 0;">
+          <div class="filter-row" id="monFilter">
+            <div class="pill active" onclick="setMonFilter(this,'All')">Semua</div>
+            <div class="pill" onclick="setMonFilter(this,'Normal')">Normal</div>
+            <div class="pill" onclick="setMonFilter(this,'Elite')">Elite</div>
+            <div class="pill" onclick="setMonFilter(this,'Boss')">Boss</div>
+            <div class="pill" onclick="setMonFilter(this,'Raid')">Raid Boss</div>
+            <div class="pill" onclick="setMonFilter(this,'Field')">Field Boss</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="monster-table" id="monsterTable">
+            <thead>
+              <tr>
+                <th style="width:40px;"></th>
+                <th>NAMA MONSTER</th>
+                <th>LEVEL</th>
+                <th>HP</th>
+                <th>EXP</th>
+                <th>ZONA</th>
+                <th>DROP UTAMA</th>
+                <th>TIPE</th>
+              </tr>
+            </thead>
+            <tbody id="monsterBody"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:var(--text-muted);">Menampilkan <span id="monCount">15</span> dari 312 monster</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-outline">‹ Prev</button>
+            <button class="btn-outline" style="color:var(--gold);border-color:var(--gold);">1</button>
+            <button class="btn-outline">2</button>
+            <button class="btn-outline">3</button>
+            <button class="btn-outline">Next ›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM DATABASE -->
+      <div id="items" class="section-label">Database Item & Equipment</div>
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-header">
+          <div class="panel-title">Item Database</div>
+          <div class="tabs" style="border:none;margin-left:auto;">
+            <div class="tab active" onclick="setTab(this,'weapon')">Senjata</div>
+            <div class="tab" onclick="setTab(this,'armor')">Armor</div>
+            <div class="tab" onclick="setTab(this,'acc')">Aksesori</div>
+            <div class="tab" onclick="setTab(this,'consume')">Konsumable</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="filter-row">
+            <div class="pill active">Semua Rarity</div>
+            <div class="pill" style="color:#27ae60;border-color:#2a4a2a;">Uncommon</div>
+            <div class="pill" style="color:#5b9bd5;border-color:#1a3050;">Rare</div>
+            <div class="pill" style="color:#b57bee;border-color:#3a1f5a;">Epic</div>
+            <div class="pill" style="color:var(--gold);border-color:var(--gold-dark);">Legendary</div>
+          </div>
+          <div class="item-grid" id="itemGrid"></div>
+        </div>
+      </div>
+
+      <!-- RANKING -->
+      <div id="ranking" class="section-label">Peringkat Pemain</div>
+      <div class="panel" style="margin-bottom:1.5rem;">
+        <div class="panel-header">
+          <div class="panel-title">Leaderboard</div>
+          <div class="tabs" style="border:none;margin-left:auto;">
+            <div class="tab active" onclick="setRankTab(this,'level')">Level</div>
+            <div class="tab" onclick="setRankTab(this,'pvp')">PvP Kill</div>
+            <div class="tab" onclick="setRankTab(this,'guild')">Guild</div>
+            <div class="tab" onclick="setRankTab(this,'boss')">Boss Kill</div>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0;">
+          <table class="rank-table" id="rankTable">
+            <tbody id="rankBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+
+      <!-- Server Status -->
+      <div class="panel" style="margin-bottom:1rem;">
+        <div class="panel-header"><div class="panel-title">Status Server</div></div>
+        <div class="sidebar-server">
+          <div class="server-row"><span>⚔ Server Utama</span><span style="color:var(--green);">● ONLINE</span></div>
+          <div class="server-row"><span>👥 Total Online</span><span id="sideOnline">1,247</span></div>
+          <div class="server-row"><span>⚔ Mode Nation</span><span id="sideNation">843</span></div>
+          <div class="server-row"><span>💀 Mode Carnage</span><span id="sideCarnage">156</span></div>
+          <div class="server-row"><span>🎉 Event Server</span><span id="sideEvent">248</span></div>
+          <div class="server-row"><span>🔄 Last Update</span><span style="color:var(--text-muted);font-size:11px;" id="lastUpdate">--:--:--</span></div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="panel" style="margin-bottom:1rem;">
+        <div class="panel-header"><div class="panel-title">Akses Cepat</div></div>
+        <div class="quick-links">
+          <a href="#monsters" class="ql-btn"><span class="ql-icon">👾</span><span class="ql-lbl">Monster</span></a>
+          <a href="#items" class="ql-btn"><span class="ql-icon">🗡️</span><span class="ql-lbl">Item</span></a>
+          <a href="#ranking" class="ql-btn"><span class="ql-icon">🏆</span><span class="ql-lbl">Ranking</span></a>
+          <a href="#zones" class="ql-btn"><span class="ql-icon">🗺️</span><span class="ql-lbl">Peta</span></a>
+          <a href="#" class="ql-btn"><span class="ql-icon">✨</span><span class="ql-lbl">Skill</span></a>
+          <a href="#" class="ql-btn"><span class="ql-icon">⚗️</span><span class="ql-lbl">Craft</span></a>
+          <a href="#" class="ql-btn"><span class="ql-icon">📜</span><span class="ql-lbl">Quest</span></a>
+          <a href="#" class="ql-btn"><span class="ql-icon">🛡️</span><span class="ql-lbl">Guild</span></a>
+        </div>
+      </div>
+
+      <!-- Zone Map -->
+      <div id="zones" class="panel" style="margin-bottom:1rem;">
+        <div class="panel-header"><div class="panel-title">Zona Area</div></div>
+        <div class="zone-list" id="zoneList"></div>
+      </div>
+
+      <!-- News -->
+      <div class="panel" style="margin-bottom:1rem;">
+        <div class="panel-header">
+          <div class="panel-title">Berita Terbaru</div>
+          <a href="#" style="font-size:11px;color:var(--gold);text-decoration:none;">Lihat Semua →</a>
+        </div>
+        <div style="padding:8px 16px;" id="newsList"></div>
+      </div>
+
+      <!-- Top Guild -->
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Top Guild</div></div>
+        <div style="padding:0;" id="guildList"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold);margin-bottom:8px;">NEXIA-CLASSIC.COM</p>
+  <p>Database & Panduan Game Nexia Classic &nbsp;·&nbsp; Diperbarui setiap 60 detik</p>
+  <p style="margin-top:6px;"><a href="#">Tentang Kami</a> &nbsp;·&nbsp; <a href="#">Kontak</a> &nbsp;·&nbsp; <a href="#">Privasi</a> &nbsp;·&nbsp; <a href="#">Forum</a></p>
+  <p style="margin-top:8px;font-size:11px;">Nexia Classic adalah game privat server. Website ini tidak berafiliasi resmi dengan pengembang asli.</p>
+</footer>
+
+<script>
+// ── DATA ──
+const monsters = [
+  { icon:'🐺', name:'Serigala Lapar', level:5,  hp:'320',   exp:'48',    zone:'Hutan Pemula',  drops:['Kulit Serigala','Kuku','Daging'], types:['common','common','uncommon'], tier:'Normal' },
+  { icon:'🦎', name:'Kadal Berbisa',  level:12, hp:'780',   exp:'125',   zone:'Rawa Selatan',  drops:['Racun Kadal','Sisik Hijau'],       types:['uncommon','rare'],            tier:'Normal' },
+  { icon:'💀', name:'Tengkorak Abadi',level:25, hp:'2,100', exp:'380',   zone:'Makam Kuno',    drops:['Tulang Jimat','Koin Kuno','Pedang Retak'], types:['uncommon','rare','epic'], tier:'Elite' },
+  { icon:'🔥', name:'Elemental Api',  level:35, hp:'4,500', exp:'720',   zone:'Gunung Berapi', drops:['Kristal Api','Inti Lava'],         types:['rare','epic'],                tier:'Elite' },
+  { icon:'🐉', name:'Naga Abyssal',   level:50, hp:'28,000',exp:'5,600', zone:'Gua Naga',      drops:['Sisik Naga','Cakar Naga','Inti Dragon'], types:['epic','epic','legendary'],tier:'Boss'  },
+  { icon:'⚡', name:'Golem Petir',    level:42, hp:'9,200', exp:'1,450', zone:'Dataran Badai', drops:['Inti Petir','Logam Langit'],       types:['rare','epic'],                tier:'Elite' },
+  { icon:'🦂', name:'Kalajengking Raja',level:28,hp:'3,100','exp':'510', zone:'Gurun Timur',   drops:['Racun Mematikan','Capit Besi'],    types:['rare','uncommon'],            tier:'Normal' },
+  { icon:'🧟', name:'Zombie Kapten',  level:18, hp:'1,250', exp:'220',   zone:'Kuburan Tua',   drops:['Helm Berkarat','Koin Tembaga','Tulang Jempol'], types:['uncommon','common','rare'], tier:'Elite' },
+  { icon:'🦅', name:'Garuda Besi',    level:38, hp:'6,800', exp:'1,100', zone:'Puncak Langit', drops:['Bulu Garuda','Cakar Baja'],        types:['epic','rare'],                tier:'Elite' },
+  { icon:'👹', name:'DEMON LORD KAEL',level:80, hp:'250,000',exp:'45,000',zone:'Neraka Bawah', drops:['Mahkota Iblis','Jubah Kegelapan','Pedang Jiwa'], types:['legendary','legendary','legendary'], tier:'Raid' },
+  { icon:'🌊', name:'Leviathan Laut', level:65, hp:'85,000',exp:'18,000',zone:'Laut Dalam',    drops:['Sisik Leviathan','Mutiara Abadi'], types:['legendary','epic'],           tier:'Field' },
+  { icon:'🕷', name:'Laba-laba Raksasa',level:20,hp:'1,600','exp':'270', zone:'Hutan Gelap',   drops:['Jaring Laba','Racun Web'],         types:['uncommon','rare'],            tier:'Normal' },
+  { icon:'🦁', name:'Singa Emas',     level:45, hp:'11,000',exp:'2,200', zone:'Padang Savana', drops:['Taring Emas','Bulu Emas'],         types:['epic','rare'],                tier:'Boss'   },
+  { icon:'🧊', name:'Elemental Es',   level:33, hp:'3,900', exp:'640',   zone:'Pegunungan Utara',drops:['Kristal Es','Air Murni'],        types:['rare','uncommon'],            tier:'Elite'  },
+  { icon:'🐻', name:'Beruang Kuno',   level:8,  hp:'520',   exp:'85',    zone:'Hutan Pemula',  drops:['Bulu Tebal','Cakar Beruang','Madu'],types:['common','uncommon','common'],tier:'Normal' },
+];
+
+const items = {
+  weapon: [
+    { icon:'⚔️', name:'Pedang Abyssal',    type:'Pedang Dua Tangan', rarity:'legendary' },
+    { icon:'🗡️', name:'Belati Bayangan',   type:'Senjata Ganda',     rarity:'epic'      },
+    { icon:'🏹', name:'Busur Elven',        type:'Busur Jarak Jauh',  rarity:'rare'      },
+    { icon:'🪄', name:'Tongkat Kristal',    type:'Staf Sihir',        rarity:'epic'      },
+    { icon:'⚡', name:'Pedang Petir',       type:'Pedang Satu Tangan',rarity:'rare'      },
+    { icon:'🔱', name:'Tombak Naga',        type:'Tombak',            rarity:'legendary' },
+    { icon:'🪓', name:'Kapak Besi Tua',     type:'Kapak Perang',      rarity:'uncommon'  },
+    { icon:'🔫', name:'Crossbow Mekanik',   type:'Crossbow',          rarity:'rare'      },
+  ],
+  armor: [
+    { icon:'🛡️', name:'Zirah Ksatria',     type:'Full Plate Armor',  rarity:'epic'      },
+    { icon:'🥋', name:'Jubah Angin',        type:'Light Armor',       rarity:'rare'      },
+    { icon:'⚗️', name:'Jubah Sihir Biru',  type:'Mage Robe',         rarity:'epic'      },
+    { icon:'🦺', name:'Vest Pemburu',       type:'Medium Armor',      rarity:'uncommon'  },
+    { icon:'🪖', name:'Helm Baja Keras',    type:'Helm',              rarity:'rare'      },
+    { icon:'👟', name:'Sepatu Angin',       type:'Light Boots',       rarity:'rare'      },
+  ],
+  acc: [
+    { icon:'💍', name:'Cincin Kekuatan',    type:'Cincin',            rarity:'epic'      },
+    { icon:'📿', name:'Kalung Perlindungan',type:'Kalung',            rarity:'rare'      },
+    { icon:'⌚', name:'Gelang Waktu',       type:'Gelang',            rarity:'legendary' },
+    { icon:'💎', name:'Berlian Kutukan',    type:'Gem Socket',        rarity:'epic'      },
+    { icon:'🪬', name:'Jimat Keberanian',   type:'Charm',             rarity:'uncommon'  },
+  ],
+  consume: [
+    { icon:'🧪', name:'Potion Merah',       type:'Pemulih HP',        rarity:'common'    },
+    { icon:'💊', name:'Elixir Kekuatan',    type:'Buff ATK',          rarity:'uncommon'  },
+    { icon:'🍖', name:'Daging Bakar',       type:'Makanan HP',        rarity:'common'    },
+    { icon:'✨', name:'Scroll Teleport',    type:'Utilitas',          rarity:'uncommon'  },
+    { icon:'💨', name:'Potion Biru',        type:'Pemulih MP',        rarity:'common'    },
+    { icon:'🔮', name:'Orb Kebijaksanaan',  type:'Buff EXP',          rarity:'rare'      },
+  ],
+};
+
+const players = [
+  { name:'ShadowDragon',  cls:'Warrior', clsIcon:'⚔', clsK:'warrior', lv:98,  val:'9,847,230' },
+  { name:'MysticAurora',  cls:'Mage',    clsIcon:'🔮', clsK:'mage',    lv:95,  val:'8,234,100' },
+  { name:'ArrowStrike',   cls:'Archer',  clsIcon:'🏹', clsK:'archer',  lv:94,  val:'7,923,440' },
+  { name:'HolyGuardian',  cls:'Cleric',  clsIcon:'✨', clsK:'cleric',  lv:92,  val:'7,112,090' },
+  { name:'DarkPhoenix',   cls:'Rogue',   clsIcon:'🗡', clsK:'rogue',   lv:91,  val:'6,889,560' },
+  { name:'IronFist',      cls:'Warrior', clsIcon:'⚔', clsK:'warrior', lv:90,  val:'6,543,200' },
+  { name:'StarWeaver',    cls:'Mage',    clsIcon:'🔮', clsK:'mage',    lv:89,  val:'6,120,880' },
+  { name:'NightHunter',   cls:'Archer',  clsIcon:'🏹', clsK:'archer',  lv:88,  val:'5,987,340' },
+  { name:'LightBringer',  cls:'Cleric',  clsIcon:'✨', clsK:'cleric',  lv:87,  val:'5,734,200' },
+  { name:'BladeMaster',   cls:'Rogue',   clsIcon:'🗡', clsK:'rogue',   lv:86,  val:'5,512,700' },
+];
+
+const zones = [
+  { name:'Hutan Pemula',   sub:'Lvl 1–15', lvl:'1–15',  danger:'safe'    },
+  { name:'Rawa Selatan',   sub:'Lvl 10–25',lvl:'10–25', danger:'normal'  },
+  { name:'Makam Kuno',     sub:'Lvl 20–35',lvl:'20–35', danger:'normal'  },
+  { name:'Gurun Timur',    sub:'Lvl 25–40',lvl:'25–40', danger:'danger'  },
+  { name:'Gunung Berapi',  sub:'Lvl 30–50',lvl:'30–50', danger:'danger'  },
+  { name:'Gua Naga',       sub:'Lvl 45–60',lvl:'45–60', danger:'extreme' },
+  { name:'Puncak Langit',  sub:'Lvl 35–55',lvl:'35–55', danger:'danger'  },
+  { name:'Neraka Bawah',   sub:'Lvl 70+',  lvl:'70+',   danger:'extreme' },
+];
+
+const news = [
+  { date:'09/04/26', tag:'update',   title:'Update v2.4.1 – Zona Neraka Bawah Dibuka!',        excerpt:'Area baru dengan 3 boss baru dan loot eksklusif tersedia mulai hari ini.' },
+  { date:'07/04/26', tag:'hot',      title:'Event Double EXP Weekend – 12–14 April',            excerpt:'Dapatkan 2x pengalaman di semua zona selama akhir pekan mendatang.' },
+  { date:'05/04/26', tag:'new-tag',  title:'Item Senjata Musiman: Pedang Sakura tersedia',      excerpt:'Dapatkan dari event Spring Boss yang muncul di semua server.' },
+  { date:'02/04/26', tag:'update',   title:'Perbaikan Bug: Lag di Zona Makam Kuno diperbaiki',  excerpt:'Server stability upgrade sudah diterapkan. Report bug ke forum.' },
+];
+
+const guilds = [
+  { name:'Legion of Eternity', members:48, power:'⚔⚔⚔⚔⚔' },
+  { name:'Shadow Covenant',    members:42, power:'⚔⚔⚔⚔⚔' },
+  { name:'Dragon Knights',     members:39, power:'⚔⚔⚔⚔'  },
+  { name:'Celestial Order',    members:35, power:'⚔⚔⚔⚔'  },
+  { name:'Iron Brotherhood',   members:31, power:'⚔⚔⚔'   },
+];
+
+// ── RENDER ──
+function renderMonsters(data) {
+  const body = document.getElementById('monsterBody');
+  body.innerHTML = data.map(m => `
+    <tr>
+      <td><div class="monster-img">${m.icon}</div></td>
+      <td><div class="monster-name"><a href="#">${m.name}</a></div></td>
+      <td><span class="monster-lvl">${m.level}</span></td>
+      <td><span class="monster-hp">${m.hp}</span></td>
+      <td><span class="monster-exp">${m.exp}</span></td>
+      <td><span class="monster-zone">${m.zone}</span></td>
+      <td><div class="drops">${m.drops.map((d,i)=>`<span class="drop-badge drop-${m.types[i]}">${d}</span>`).join('')}</div></td>
+      <td><span class="drop-badge drop-${m.tier==='Raid'?'legendary':m.tier==='Boss'?'epic':m.tier==='Elite'?'rare':m.tier==='Field'?'legendary':'common'}">${m.tier}</span></td>
+    </tr>`).join('');
+  document.getElementById('monCount').textContent = data.length;
+}
+
+function renderItems(cat) {
+  const grid = document.getElementById('itemGrid');
+  const data = items[cat] || items.weapon;
+  grid.innerHTML = data.map(it => `
+    <div class="item-card" onclick="alert('Detail: ${it.name}')">
+      <span class="item-icon">${it.icon}</span>
+      <div class="item-name">${it.name}</div>
+      <div class="item-type">${it.type}</div>
+      <div class="item-rarity rarity-${it.rarity}">${it.rarity.toUpperCase()}</div>
+    </div>`).join('');
+}
+
+function renderRanking(data) {
+  const body = document.getElementById('rankBody');
+  body.innerHTML = data.map((p,i) => `
+    <tr>
+      <td style="width:40px;padding-left:16px;">
+        <span class="rank-num ${i<3?`rank-${i+1}`:'rank-other'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span>
+      </td>
+      <td style="width:36px;">
+        <div class="rank-badge rb-${p.clsK}">${p.clsIcon}</div>
+      </td>
+      <td>
+        <div class="rank-player">${p.name}</div>
+        <div class="rank-class">${p.cls}</div>
+      </td>
+      <td style="text-align:right;padding-right:8px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold);">LV ${p.lv}</div>
+      </td>
+      <td style="text-align:right;padding-right:16px;">
+        <div class="rank-val">${p.val} EXP</div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderZones() {
+  const list = document.getElementById('zoneList');
+  list.innerHTML = zones.map(z => `
+    <div class="zone-row" onclick="alert('Detail zona: ${z.name}')">
+      <div style="display:flex;align-items:center;">
+        <div class="zone-dot z-${z.danger}"></div>
+        <div>
+          <div class="zone-name">${z.name}</div>
+          <div class="zone-sub">${z.sub}</div>
+        </div>
+      </div>
+      <span class="zone-lvl">Lvl ${z.lvl}</span>
+    </div>`).join('');
+}
+
+function renderNews() {
+  const list = document.getElementById('newsList');
+  list.innerHTML = news.map(n => `
+    <div class="news-item">
+      <div class="news-date">${n.date}</div>
+      <div class="news-content">
+        <span class="news-tag ${n.tag}">${n.tag==='new-tag'?'NEW':n.tag.toUpperCase()}</span>
+        <div class="news-title">${n.title}</div>
+        <div class="news-excerpt">${n.excerpt}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderGuilds() {
+  const list = document.getElementById('guildList');
+  list.innerHTML = guilds.map((g,i) => `
+    <div class="zone-row">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'Share Tech Mono';color:var(--text-muted);font-size:12px;min-width:20px;">${i+1}</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-bright);">${g.name}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${g.members} Anggota</div>
+        </div>
+      </div>
+      <span style="font-size:12px;color:var(--gold);">${g.power}</span>
+    </div>`).join('');
+}
+
+// ── INTERACTIONS ──
+let currentMonFilter = 'All';
+function setMonFilter(el, cat) {
+  document.querySelectorAll('#monFilter .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  currentMonFilter = cat;
+  const filtered = cat === 'All' ? monsters : monsters.filter(m => m.tier === cat);
+  renderMonsters(filtered);
+}
+
+let currentItemTab = 'weapon';
+function setTab(el, cat) {
+  document.querySelectorAll('.panel-header .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentItemTab = cat;
+  renderItems(cat);
+}
+
+function setRankTab(el, type) {
+  document.querySelectorAll('.panel:has(#rankTable) .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const shuffled = [...players].sort(() => Math.random() - 0.5);
+  renderRanking(shuffled);
+}
+
+function sortMonsters() {
+  const sorted = [...monsters].sort((a,b) => a.level - b.level);
+  renderMonsters(sorted);
+}
+function filterMonsters() {
+  const input = prompt('Cari nama monster:');
+  if (!input) return renderMonsters(monsters);
+  const filtered = monsters.filter(m => m.name.toLowerCase().includes(input.toLowerCase()));
+  renderMonsters(filtered);
+}
+function doSearch() {
+  const q = document.getElementById('globalSearch').value.trim();
+  if (!q) return;
+  const found = monsters.filter(m => m.name.toLowerCase().includes(q.toLowerCase()));
+  if (found.length) { renderMonsters(found); document.getElementById('monsters').scrollIntoView({behavior:'smooth'}); }
+  else alert('Tidak ada hasil untuk: ' + q);
+}
+
+// ── LIVE COUNTER ──
+function updateLive() {
+  const base = 1247;
+  const v = base + Math.floor(Math.random()*20 - 10);
+  document.getElementById('playerCount').textContent = v.toLocaleString();
+  document.getElementById('h1').textContent = v.toLocaleString();
+  document.getElementById('sideOnline').textContent = v.toLocaleString();
+  document.getElementById('sideNation').textContent = Math.floor(v*.68).toLocaleString();
+  document.getElementById('sideCarnage').textContent = Math.floor(v*.12).toLocaleString();
+  document.getElementById('sideEvent').textContent = Math.floor(v*.20).toLocaleString();
+  const now = new Date();
+  document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('id-ID');
+}
+
+// ── INIT ──
+renderMonsters(monsters);
+renderItems('weapon');
+renderRanking(players);
+renderZones();
+renderNews();
+renderGuilds();
+updateLive();
+setInterval(updateLive, 10000);
+</script>
+</body>
+</html>
